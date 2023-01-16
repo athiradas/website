@@ -23,6 +23,7 @@
     max-height:100px;
     overflow: hidden;
     transition: max-height 0.5s ease-out;
+    white-space: pre-wrap;
   }
   .read-more-btn {
     margin-top: 10px;
@@ -31,15 +32,14 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 <script>
-fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vQpJZhcaLnKVsBMiZgphEFjZSXp4EGHs8PUvG9d2VFPuU3NEOnOXWJ11qnMiMEi3ys0fqrjD81Gc3gA/pub?output=csv")
-  .then(response => response.text())
+fetch("https://sheets.googleapis.com/v4/spreadsheets/1kfpUwiao9bbPGGD5ATN32NvGZ-xADqZI_87zRAeRbg8/values/Form Responses 1/?alt=json&key=AIzaSyCmMZXGLE0UCF3GjG0PWt-gDMZhICbG8pA")
+  .then(response => response.json())
   .then(data => {
-    const rows = data.split("\n").slice(1);
-    const comments = rows.map(row => {
-      const columns = Papa.parse(row).data[0];
+    const values = data.values.slice(1);
+    const comments = values.map(value => {
       return {
-        name: columns[1],
-        comment: columns[2]
+        name: value[1],
+        comment: value[2]
       };
     });
     const commentsEl = document.createElement("div");
@@ -70,7 +70,4 @@ fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vQpJZhcaLnKVsBMiZgphEFjZS
     document.body.appendChild(commentsEl);
 
   });
-  
-  
-
 </script>
