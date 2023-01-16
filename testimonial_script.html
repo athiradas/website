@@ -1,0 +1,76 @@
+<style>
+  .username {
+    text-align: right;
+    font-weight: bold;
+  }
+  .commentsEl {
+    display: flex;
+    justify-content: center;
+  }
+  .comment-box {
+    border: 2px solid #ccc;
+    background-color: #eee;
+    border-radius: 5px;
+    padding: 16px;
+    margin: 16px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    min-height: 50px;
+  }
+  .comment-text {
+    max-height:100px;
+    overflow: hidden;
+    transition: max-height 0.5s ease-out;
+  }
+  .read-more-btn {
+    margin-top: 10px;
+  }
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+<script>
+fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vQpJZhcaLnKVsBMiZgphEFjZSXp4EGHs8PUvG9d2VFPuU3NEOnOXWJ11qnMiMEi3ys0fqrjD81Gc3gA/pub?output=csv")
+  .then(response => response.text())
+  .then(data => {
+    const rows = data.split("\n").slice(1);
+    const comments = rows.map(row => {
+      const columns = Papa.parse(row).data[0];
+      return {
+        name: columns[1],
+        comment: columns[2]
+      };
+    });
+    const commentsEl = document.createElement("div");
+    comments.forEach(comment => {
+      const commentEl = document.createElement("div");
+      commentEl.classList.add("comment-box");
+      const readMoreBtn = document.createElement("button");
+      readMoreBtn.innerHTML = "Read More";
+      readMoreBtn.classList.add("read-more-btn");
+      commentEl.innerHTML = `<div class='comment-text'><p>${comment.comment}.</p></div><p  class='username'> ${comment.name}</p>`;
+      commentEl.appendChild(readMoreBtn);
+      // Get the comment text element
+      const commentTextEl = commentEl.querySelector(".comment-text");
+      readMoreBtn.addEventListener("click", function() {
+        if (readMoreBtn.innerHTML === "Read More") {
+          readMoreBtn.innerHTML = "Read Less";
+          commentTextEl.style.maxHeight = "none";
+          commentTextEl.style.overflow = "visible";
+        } else {
+          readMoreBtn.innerHTML = "Read More";
+          commentTextEl.style.maxHeight = "50px";
+          commentTextEl.style.overflow = "hidden";
+        }
+      });
+      commentsEl.appendChild(commentEl);
+    });
+    
+    document.body.appendChild(commentsEl);
+
+  });
+  
+  
+
+</script>
